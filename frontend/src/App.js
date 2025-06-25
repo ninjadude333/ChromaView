@@ -51,6 +51,17 @@ function App() {
     }
   };
 
+  const handleDisconnect = async () => {
+    try {
+      await apiService.disconnect();
+      setConnectionStatus('disconnected');
+      setCollections([]);
+      setSelectedCollection(null);
+    } catch (error) {
+      console.error('Disconnect failed:', error);
+    }
+  };
+
   return (
     <div className="container">
       <header style={{ marginBottom: '30px' }}>
@@ -62,6 +73,7 @@ function App() {
         status={connectionStatus}
         onConnect={handleConnect}
         onRefresh={handleRefresh}
+        onDisconnect={handleDisconnect}
       />
 
       {connectionStatus === 'connected' && (

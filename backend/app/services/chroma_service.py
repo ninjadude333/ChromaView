@@ -1,5 +1,4 @@
 import chromadb
-from chromadb.config import Settings
 from typing import List, Dict, Any, Optional
 from app.models.schemas import ConnectionConfig, CollectionInfo, DocumentResponse
 
@@ -19,11 +18,21 @@ class ChromaService:
                 self.client = chromadb.Client()
             
             self.connection_config = config
-            # Test connection
-            self.client.heartbeat()
+            # Test connection by creating/accessing a test collection
+            try:
+                # This will create the tenant if it doesn't exist
+                test_collection = self.client.get_or_create_collection(name="connection_test")
+            except Exception:
+                # Fallback to heartbeat if collection access fails
+                self.client.heartbeat()
             return True
         except Exception as e:
             raise Exception(f"Failed to connect to ChromaDB: {str(e)}")
+    
+    def disconnect(self):
+        self.client = None
+        self.connection_config = None
+        return True
     
     def get_collections(self) -> List[CollectionInfo]:
         if not self.client:

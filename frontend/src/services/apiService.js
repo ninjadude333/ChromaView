@@ -21,6 +21,11 @@ export const apiService = {
     return response.data;
   },
 
+  disconnect: async () => {
+    const response = await api.post('/api/connections/disconnect');
+    return response.data;
+  },
+
   // Collections endpoints
   getCollections: async () => {
     const response = await api.get('/api/collections/');

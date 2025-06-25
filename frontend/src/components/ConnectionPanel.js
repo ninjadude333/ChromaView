@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
-const ConnectionPanel = ({ status, onConnect, onRefresh }) => {
+const ConnectionPanel = ({ status, onConnect, onRefresh, onDisconnect }) => {
   const [config, setConfig] = useState({
-    host: 'localhost',
-    port: 8001,
-    is_remote: false
+    host: 'aipg.dudelabz.com',
+    port: 8000,
+    is_remote: true
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -47,13 +47,20 @@ const ConnectionPanel = ({ status, onConnect, onRefresh }) => {
           {status}
         </span>
         {status === 'connected' && (
-          <button 
-            className="btn btn-secondary" 
-            onClick={onRefresh}
-            style={{ marginLeft: 'auto' }}
-          >
-            Refresh
-          </button>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
+            <button 
+              className="btn btn-secondary" 
+              onClick={onRefresh}
+            >
+              Refresh
+            </button>
+            <button 
+              className="btn btn-danger" 
+              onClick={onDisconnect}
+            >
+              Disconnect
+            </button>
+          </div>
         )}
       </div>
 
