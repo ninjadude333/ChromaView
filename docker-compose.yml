@@ -27,7 +27,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_API_URL=http://172.16.205.103:8000
       - CHOKIDAR_USEPOLLING=true
     networks:
       - chromaview-network
@@ -35,3 +35,6 @@ services:
 networks:
   chromaview-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
