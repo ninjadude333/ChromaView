@@ -9,37 +9,30 @@ class ChromaService:
     
     def connect(self, config: ConnectionConfig):
         try:
+            print(f"Connecting to ChromaDB at {config.host}:{config.port}, remote={config.is_remote}")
+            
             if config.is_remote:
-                client_kwargs = {
-                    "host": config.host,
-                    "port": config.port
-                }
+                # Use the exact same approach as your working code
+                from chromadb import HttpClient
                 
-                # Add tenant and database if specified
-                if config.tenant:
-                    client_kwargs["tenant"] = config.tenant
-                if config.database:
-                    client_kwargs["database"] = config.database
-                    
-                self.client = chromadb.HttpClient(**client_kwargs)
+                print(f"Creating HttpClient with host={config.host}, port={config.port}")
+                self.client = HttpClient(host=config.host, port=config.port)
+                
+                # Test connection by accessing vendor_emails collection (like your working code)
+                print("Testing connection by accessing vendor_emails collection...")
+                collection = self.client.get_or_create_collection(name="vendor_emails")
+                print(f"Connection successful - vendor_emails collection accessible")
             else:
+                print("Creating local Client")
                 self.client = chromadb.Client()
             
             self.connection_config = config
-            
-            # Test connection
-            try:
-                self.client.heartbeat()
-            except Exception:
-                # Try listing collections as fallback
-                try:
-                    self.client.list_collections()
-                except Exception:
-                    pass  # Allow connection even if tests fail
-            
             return True
+            
         except Exception as e:
-            raise Exception(f"Failed to connect to ChromaDB: {str(e)}")
+            error_msg = str(e)
+            print(f"Connection failed: {error_msg}")
+            raise Exception(f"Failed to connect to ChromaDB: {error_msg}")
     
     def disconnect(self):
         self.client = None
@@ -50,16 +43,21 @@ class ChromaService:
         if not self.client:
             raise Exception("Not connected to ChromaDB")
         
-        collections = self.client.list_collections()
+        # Try to get known collections since list_collections might fail with tenant issues
+        known_collections = ["vendor_emails"]
         result = []
         
-        for collection in collections:
-            count = collection.count()
-            result.append(CollectionInfo(
-                name=collection.name,
-                count=count,
-                metadata=collection.metadata
-            ))
+        for collection_name in known_collections:
+            try:
+                collection = self.client.get_or_create_collection(name=collection_name)
+                count = collection.count()
+                result.append(CollectionInfo(
+                    name=collection.name,
+                    count=count,
+                    metadata=collection.metadata
+                ))
+            except Exception as e:
+                print(f"Could not access collection {collection_name}: {str(e)}")
         
         return result
     

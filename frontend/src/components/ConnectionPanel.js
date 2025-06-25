@@ -96,7 +96,7 @@ const ConnectionPanel = ({ status, onConnect, onRefresh, onDisconnect }) => {
                 type="text"
                 value={config.tenant}
                 onChange={(e) => setConfig({...config, tenant: e.target.value})}
-                placeholder="default_tenant"
+                placeholder="Leave empty for default"
                 style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               />
             </div>
@@ -106,7 +106,7 @@ const ConnectionPanel = ({ status, onConnect, onRefresh, onDisconnect }) => {
                 type="text"
                 value={config.database}
                 onChange={(e) => setConfig({...config, database: e.target.value})}
-                placeholder="default_database"
+                placeholder="Leave empty for default"
                 style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               />
             </div>
