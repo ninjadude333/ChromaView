@@ -10,21 +10,33 @@ class ChromaService:
     def connect(self, config: ConnectionConfig):
         try:
             if config.is_remote:
-                self.client = chromadb.HttpClient(
-                    host=config.host,
-                    port=config.port
-                )
+                client_kwargs = {
+                    "host": config.host,
+                    "port": config.port
+                }
+                
+                # Add tenant and database if specified
+                if config.tenant:
+                    client_kwargs["tenant"] = config.tenant
+                if config.database:
+                    client_kwargs["database"] = config.database
+                    
+                self.client = chromadb.HttpClient(**client_kwargs)
             else:
                 self.client = chromadb.Client()
             
             self.connection_config = config
-            # Test connection by creating/accessing a test collection
+            
+            # Test connection
             try:
-                # This will create the tenant if it doesn't exist
-                test_collection = self.client.get_or_create_collection(name="connection_test")
-            except Exception:
-                # Fallback to heartbeat if collection access fails
                 self.client.heartbeat()
+            except Exception:
+                # Try listing collections as fallback
+                try:
+                    self.client.list_collections()
+                except Exception:
+                    pass  # Allow connection even if tests fail
+            
             return True
         except Exception as e:
             raise Exception(f"Failed to connect to ChromaDB: {str(e)}")

@@ -4,7 +4,9 @@ const ConnectionPanel = ({ status, onConnect, onRefresh, onDisconnect }) => {
   const [config, setConfig] = useState({
     host: 'aipg.dudelabz.com',
     port: 8000,
-    is_remote: true
+    is_remote: true,
+    tenant: '',
+    database: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -82,6 +84,29 @@ const ConnectionPanel = ({ status, onConnect, onRefresh, onDisconnect }) => {
                 type="number"
                 value={config.port}
                 onChange={(e) => setConfig({...config, port: parseInt(e.target.value)})}
+                style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+              />
+            </div>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+            <div>
+              <label>Tenant (optional):</label>
+              <input
+                type="text"
+                value={config.tenant}
+                onChange={(e) => setConfig({...config, tenant: e.target.value})}
+                placeholder="default_tenant"
+                style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+              />
+            </div>
+            <div>
+              <label>Database (optional):</label>
+              <input
+                type="text"
+                value={config.database}
+                onChange={(e) => setConfig({...config, database: e.target.value})}
+                placeholder="default_database"
                 style={{ width: '100%', padding: '8px', marginTop: '5px' }}
               />
             </div>

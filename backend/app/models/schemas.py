@@ -5,6 +5,8 @@ class ConnectionConfig(BaseModel):
     host: str = "localhost"
     port: int = 8000
     is_remote: bool = False
+    tenant: Optional[str] = None
+    database: Optional[str] = None
 
 class CollectionInfo(BaseModel):
     name: str
