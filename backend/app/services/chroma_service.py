@@ -12,13 +12,17 @@ class ChromaService:
             print(f"Connecting to ChromaDB at {config.host}:{config.port}, remote={config.is_remote}")
             
             if config.is_remote:
-                # Use the exact same approach as your working code
-                from chromadb import HttpClient
+                # Use EXACTLY the same approach as your working code
+                import chromadb
                 
                 print(f"Creating HttpClient with host={config.host}, port={config.port}")
-                self.client = HttpClient(host=config.host, port=config.port)
+                # Exact same parameters as your working code
+                self.client = chromadb.HttpClient(
+                    host=config.host,
+                    port=config.port
+                )
                 
-                # Test connection by accessing vendor_emails collection (like your working code)
+                # Test connection by accessing vendor_emails collection (exactly like your working code)
                 print("Testing connection by accessing vendor_emails collection...")
                 collection = self.client.get_or_create_collection(name="vendor_emails")
                 print(f"Connection successful - vendor_emails collection accessible")
@@ -43,23 +47,39 @@ class ChromaService:
         if not self.client:
             raise Exception("Not connected to ChromaDB")
         
-        # Try to get known collections since list_collections might fail with tenant issues
-        known_collections = ["vendor_emails"]
-        result = []
-        
-        for collection_name in known_collections:
-            try:
-                collection = self.client.get_or_create_collection(name=collection_name)
+        # Use the same approach as your working code
+        try:
+            collections = self.client.list_collections()
+            result = []
+            
+            for collection in collections:
                 count = collection.count()
                 result.append(CollectionInfo(
                     name=collection.name,
                     count=count,
                     metadata=collection.metadata
                 ))
-            except Exception as e:
-                print(f"Could not access collection {collection_name}: {str(e)}")
-        
-        return result
+            
+            return result
+        except Exception as e:
+            print(f"list_collections failed: {str(e)}")
+            # Fallback to known collections
+            known_collections = ["vendor_emails"]
+            result = []
+            
+            for collection_name in known_collections:
+                try:
+                    collection = self.client.get_or_create_collection(name=collection_name)
+                    count = collection.count()
+                    result.append(CollectionInfo(
+                        name=collection.name,
+                        count=count,
+                        metadata=collection.metadata
+                    ))
+                except Exception as e:
+                    print(f"Could not access collection {collection_name}: {str(e)}")
+            
+            return result
     
     def get_documents(self, collection_name: str, limit: int = 50, offset: int = 0) -> List[DocumentResponse]:
         if not self.client:
