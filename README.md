@@ -74,22 +74,46 @@ cd ChromaView
 docker-compose up --build
 
 # 3. Open your browser
-# 🌐 http://localhost:3000
+# 🌐 http://localhost:3000 (or your Docker host IP:3000)
 ```
 
-**That's it!** ChromaView includes a test ChromaDB instance, so you can explore immediately.
+**That's it!** ChromaView is ready to connect to any ChromaDB instance.
 
 ### 🎯 Connect to Your ChromaDB
 
-1. **Local ChromaDB**: Just click "Connect" (defaults work!)
-2. **Remote ChromaDB**: Enter your host/port and connect
-3. **Start exploring** your collections and documents
+1. **Remote ChromaDB**: Enter your host/port (e.g., `your-server.com:8000`)
+2. **Local ChromaDB**: Use `localhost:8000` for local instances
+3. **Docker ChromaDB**: Use your Docker host IP and port
+4. **Leave tenant/database empty** for most setups
+5. **Click Connect** and start exploring!
+
+### 🔧 Supported ChromaDB Versions
+
+- ✅ **ChromaDB 1.0.x** (Recommended)
+- ✅ **ChromaDB 0.4.x** (Supported)
+- ⚠️ **ChromaDB 0.3.x** (Limited support)
 
 ### 🐳 Production Deployment
 
 ```bash
 # For production use
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose up -d
+
+# Access via your server IP
+# http://your-server-ip:3000
+```
+
+### 🔧 Configuration
+
+**Environment Variables:**
+
+```bash
+# Frontend API URL (adjust for your setup)
+REACT_APP_API_URL=http://your-backend-host:8000
+
+# Backend settings
+PYTHONPATH=/app
+RELOAD=true
 ```
 
 ## 🎥 Demo
@@ -108,12 +132,12 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   React Frontend│    │  FastAPI Backend│    │    ChromaDB     │
-│   (Port 3000)   │◄──►│   (Port 8000)   │◄──►│   (Port 8001)   │
+│   React Frontend│    │  FastAPI Backend│    │  Your ChromaDB  │
+│   (Port 3000)   │◄──►│   (Port 8000)   │◄──►│  (Any Host:Port) │
 │                 │    │                 │    │                 │
 │ • Modern UI     │    │ • Fast API      │    │ • Your Data     │
 │ • Real-time     │    │ • ChromaDB      │    │ • Collections   │
-│ • Responsive    │    │   Integration   │    │ • Documents     │
+│ • Responsive    │    │   Client v1.0   │    │ • Documents     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -151,11 +175,26 @@ ChromaView/
 # Backend (FastAPI + ChromaDB)
 cd backend
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --host 0.0.0.0
 
 # Frontend (React)
 cd frontend
 npm install && npm start
+
+# Or use Docker for development
+docker-compose up --build
+```
+
+### 🧪 Testing Connection
+
+```bash
+# Test backend API
+curl http://localhost:8000/api/connections/status
+
+# Test ChromaDB connection
+curl -X POST http://localhost:8000/api/connections/connect \
+  -H "Content-Type: application/json" \
+  -d '{"host":"your-chromadb-host","port":8000,"is_remote":true}'
 ```
 
 ### 🎯 What We're Building Next
@@ -198,6 +237,13 @@ git push origin feature/amazing-feature
 ```
 
 **First time contributing to open source? We're here to help! 🤗**
+
+### 🐛 Known Issues & Solutions
+
+- **Connection fails**: Check ChromaDB version compatibility
+- **Tenant errors**: Leave tenant/database fields empty
+- **Network issues**: Ensure ChromaDB is accessible from Docker container
+- **Port conflicts**: Adjust ports in docker-compose.yml if needed
 
 ## 🌟 Community
 
