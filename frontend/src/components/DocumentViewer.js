@@ -114,7 +114,7 @@ const DocumentViewer = ({ collection }) => {
                   <div style={{ fontSize: '12px', color: '#666', fontFamily: 'monospace' }}>
                     ID: {doc.id}
                   </div>
-                  {doc.distance !== undefined && (
+                  {doc.distance !== undefined && doc.distance !== null && (
                     <div style={{ fontSize: '12px', color: '#007bff' }}>
                       Distance: {doc.distance.toFixed(4)}
                     </div>
